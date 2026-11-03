@@ -7,20 +7,22 @@ public class SemaphoreManager {
 
     }
 
-    // Acquire a permit (blocking)
+    // Blocking acquire
     public synchronized void acquire() throws InterruptedException {
 
     }
 
-    // Try to acquire a permit immediately
+    // Non-blocking acquire
     public synchronized boolean tryAcquire() {
 
+        return false;
     }
 
-    // Try to acquire a permit within a specified time
+    // Timed acquire
     public synchronized boolean tryAcquire(int time)
             throws InterruptedException {
 
+        return false;
     }
 
     // Release a permit
