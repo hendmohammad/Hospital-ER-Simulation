@@ -14,7 +14,12 @@ public class TreatmentRoom {
         // this  function  simulates acquiring room in 3 sec and return true if the doctor could acquire the room and false if not.
     }
 
-    //this method should called after a doctor finishs treating a petient
+    // method used to actuallt acquire a room 
+    public void acquireRoom() throws InterruptedException {
+        rooms.acquire();
+}
+
+    //this method should called after a doctor finishes treating a patient
     public void makeRoomAvailable(){
         rooms.release();
     }
