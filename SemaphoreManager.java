@@ -1,45 +1,62 @@
 public class SemaphoreManager {
-   private int permits;
 
-   public SemaphoreManager(int var1) {
-      this.permits = var1;
-   }
+    private int permits;
 
-   public synchronized void acquire() throws InterruptedException {
-      while(this.permits <= 0) {
-         this.wait();
-      }
+    // Constructor
+    public SemaphoreManager(int permits) {
 
-      --this.permits;
-   }
+        if (permits < 0) {
+            throw new IllegalArgumentException("Permits cannot be negative");
+        }
 
-   public synchronized boolean tryAcquire() {
-      if (this.permits > 0) {
-         --this.permits;
-         return true;
-      } else {
-         return false;
-      }
-   }
+        this.permits = permits;
+    }
 
-   public synchronized boolean tryAcquire(int var1) throws InterruptedException {
-      long var2 = System.currentTimeMillis() + (long)var1;
+    // Wait until a permit becomes available, then acquire it
+    public synchronized void acquire() throws InterruptedException {
+        while(permits == 0) {
+            wait();
+        }
+        
+        permits--;
+    }
 
-      while(this.permits <= 0) {
-         long var4 = var2 - System.currentTimeMillis();
-         if (var4 <= 0L) {
+    // Try to acquire a permit immediately
+    // Return true if successful, false otherwise
+    public synchronized boolean tryAcquire() {
+        if (permits > 0) {
+            permits--;
+            return true;
+        } else {
             return false;
-         }
+        }
+    }
 
-         this.wait(var4);
-      }
+    // Try to acquire a permit within a specified time (milliseconds)
+    public synchronized boolean tryAcquire(int time) throws InterruptedException {
+        
+        if (time < 0) {
+            throw new IllegalArgumentException("Time cannot be negative");
+        }
 
-      --this.permits;
-      return true;
-   }
+        long var2 = System.currentTimeMillis() + (long)time; // var2 stores the deadline till the dr. would wait 10:00:00 -> 10:00:03
 
-   public synchronized void release() {
-      ++this.permits;
-      this.notify();
+        while(permits == 0) {
+            long var4 = var2 - System.currentTimeMillis(); // calculate the remaining time
+            if (var4 <= 0L) {  // if 3 seconds has expired, returns false bec. the doctor couldn't acquire a room 
+                return false;
+            }
+
+            wait(var4); // dr. wait would wait for the remaining time if 3 secs didn't expire. Exits the loop / Wait ends when there're permits available "notifyAll called" or time ends
+        }
+
+        permits--;
+        return true;
+    }
+
+    // Release a permit and notify waiting threads
+    public synchronized void release() {
+        permits++;
+        notifyAll();
    }
 }
