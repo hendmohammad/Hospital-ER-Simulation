@@ -33,8 +33,7 @@ public class WaitingRoom {
     public void enter(Patient patient) throws InterruptedException {
 
         if (!empty.tryAcquire()) {
-            System.out.println("The waiting room is full.");
-            System.out.println(patient + " is waiting outside for an available seat.");
+            System.out.println("The waiting room is full.\n" + patient + " is waiting outside for an available seat.");
 
             empty.acquire(); // acquire is a method in semaphore class that reserves one available seat for this patient
         }
@@ -53,7 +52,7 @@ public class WaitingRoom {
         try {
             patients.addLast(patient);
             inWaitingRoom = true;
-            System.out.println(patient + " entered the waiting room");
+            System.out.println(patient + " entered the waiting room.");
         }
         finally {
             mutex.release(); // release the lock , so othe r thread can resume execution
@@ -98,8 +97,7 @@ public class WaitingRoom {
         // tryAcquire is a semaphore method, to try to acquire a resource without making the thread wait if the resource isn't available.
         // it returns true, when a seat is successfully taken. it returns false immediately, when no seats are available (reducing blocking until being available)
         if (!empty.tryAcquire()) {
-            System.out.println("The waiting room is full.");
-            System.out.println(patient + " is waiting outside for an available seat.");
+            System.out.println("The waiting room is full.\n" + patient + " is waiting outside for an available seat.");
 
             empty.acquire();
         }
@@ -114,7 +112,7 @@ public class WaitingRoom {
         
         try {
             patients.addFirst(patient);
-            System.out.println(patient + " entered the waiting room again");
+            System.out.println(patient + " entered the waiting room.");
         }
          finally {
             mutex.release();
