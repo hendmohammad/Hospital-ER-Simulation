@@ -25,7 +25,7 @@ public class Hospital{
              Thread[] patients=new Thread[num_Patients];
              for(int i=0;i<num_Patients;i++){
 
-                 Patient patient=new Patient();
+                 Patient patient=new Patient(i+1,WR);
                  patients[i]=new Thread(patient);
                  patients[i].start();
 
