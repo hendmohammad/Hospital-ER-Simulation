@@ -1,10 +1,25 @@
-class Patient implements Runnable{
+class Patient implements Runnable {
 
-    @Override
-    public void run(){
+    private final int id;
+    private final WaitingRoom waitingRoom;
 
-        // patient implementation
-
+    public Patient(int id, WaitingRoom waitingRoom) {
+        this.id = id;
+        this.waitingRoom = waitingRoom;
     }
 
+    @Override
+    public void run() {
+        System.out.println(this + " arrived.");
+        try {
+            waitingRoom.enter(this);  
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "P" + id;
+    }
 }
