@@ -1,14 +1,18 @@
+import java.util.concurrent.CountDownLatch; // concurrency tool for threads 
+
 class Doctor implements Runnable{
 
     private WaitingRoom waitingRoom;
     private TreatmentRoom treatmentRoom;
     private Patient patient;
     private int doctorId;
+    private CountDownLatch finished; 
 
-    public Doctor(WaitingRoom waitingRoom, TreatmentRoom treatmentRoom, int doctorId) {
+    public Doctor(WaitingRoom waitingRoom, TreatmentRoom treatmentRoom, int doctorId, CountDownLatch finished) {
         this.waitingRoom = waitingRoom;
         this.treatmentRoom = treatmentRoom;
         this.doctorId = doctorId;
+        this.finished = finished;
     }
 
 
@@ -20,7 +24,7 @@ class Doctor implements Runnable{
             // the doctor waits until a patient is available, then takes that patient.
             try { 
                 patient = waitingRoom.leave();
-                System.out.println("Doctor D" + doctorId + " is assigned to " + patient + ".");
+                System.out.println("Doctor " + doctorId + " is assigned to " + patient + ".");
             }
             catch (InterruptedException e) {
                 Thread.currentThread().interrupt(); // if interrupted while waiting, restore the interrupted status
@@ -31,12 +35,12 @@ class Doctor implements Runnable{
             boolean isAcquired;
             
             try { 
-                System.out.println("Doctor D" + doctorId + " is trying to acquire a treatment room.");
+                System.out.println("Doctor " + doctorId + " is trying to acquire a treatment room.");
                 isAcquired = treatmentRoom.isRoomAvailable(3000); 
             }
             catch (InterruptedException e) {
                 try { 
-                    System.out.println("Doctor D" + doctorId + " is sending " + patient + " back to the waiting room.");
+                    System.out.println("Doctor " + doctorId + " is sending " + patient + " back to the waiting room.");
                     waitingRoom.sendPatientBack(patient); // if interrupted while acquiring a room, send the patient back
                 } 
                 catch (InterruptedException ex) { Thread.currentThread().interrupt(); }
@@ -47,17 +51,17 @@ class Doctor implements Runnable{
 
             if (isAcquired) {
 
-                System.out.println("Doctor D" + doctorId + " acquired a treatment room.");
-                System.out.println("Doctor D" + doctorId + " begins treating " + patient + ".");
+                System.out.println("Doctor " + doctorId + " acquired a treatment room.");
+                System.out.println("Doctor " + doctorId + " begins treating " + patient + ".");
                 
                 try { Thread.sleep(5000); } // the doctor thread sleeps to simulate time for the treatment (meaning its thread isn't available now)
                 catch (InterruptedException e) {
 
                     treatmentRoom.makeRoomAvailable(); // if interrupted during treatment, release the room first
-                    System.out.println("Doctor D" + doctorId + " released the treatment room.");
+                    System.out.println("Doctor " + doctorId + " released the treatment room.");
 
                     try { // then return the unfinished patient back
-                        System.out.println("Doctor D" + doctorId + " is sending " + patient + " back to the waiting room.");
+                        System.out.println("Doctor " + doctorId + " is sending " + patient + " back to the waiting room.");
                         waitingRoom.sendPatientBack(patient); 
                     }
                      
@@ -67,19 +71,20 @@ class Doctor implements Runnable{
                     break;
                 }
 
-                System.out.println("Doctor D" + doctorId + " finished treating " + patient + ".");
+                System.out.println("Doctor " + doctorId + " finished treating " + patient + ".");
                 treatmentRoom.makeRoomAvailable(); // release the room when the treatment finishes normally 
 
-                System.out.println("Doctor D" + doctorId + " released the treatment room.");
-                System.out.println("Doctor D" + doctorId + " is now available.");
+                System.out.println("Doctor " + doctorId + " released the treatment room.");
+                System.out.println("Doctor " + doctorId + " is now available.");
                 System.out.println(patient + " left.");
+                finished.countDown(); // this patient finished his treatment, the thread decrement N by 1
 
             } else { 
                 // if the doctor couldn't acquire a room within 3 seconds: 
-                System.out.println("Doctor D" + doctorId + " could not acquire a treatment room.");
+                System.out.println("Doctor " + doctorId + " could not acquire a treatment room.");
                
                 try { // patient returns to the waitingRoom 
-                    System.out.println("Doctor D" + doctorId + " is sending " + patient + " back to the waiting room.");
+                    System.out.println("Doctor " + doctorId + " is sending " + patient + " back to the waiting room.");
                     waitingRoom.sendPatientBack(patient);
                 } 
                 catch (InterruptedException e) {  
@@ -87,7 +92,7 @@ class Doctor implements Runnable{
                     break;
                 }
 
-                System.out.println("Doctor D" + doctorId + " is now available.");
+                System.out.println("Doctor " + doctorId + " is now available.");
             }
         }
     }
