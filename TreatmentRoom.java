@@ -1,5 +1,5 @@
 public class TreatmentRoom {
-    // in this calss the two rooms represents semaphores
+    // in this class the two rooms represents semaphores
     private SemaphoreManager rooms;
 
     //constructor
@@ -14,7 +14,7 @@ public class TreatmentRoom {
         // this  function  simulates acquiring room in 3 sec and return true if the doctor could acquire the room and false if not.
     }
 
-    // method used to actuallt acquire a room 
+    // method used to actually acquire a room 
     public void acquireRoom() throws InterruptedException {
         rooms.acquire();
 }
