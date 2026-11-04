@@ -1,7 +1,7 @@
 class Patient implements Runnable {
 
-    private final int id;
-    private final WaitingRoom waitingRoom;
+    private int id;
+    private WaitingRoom waitingRoom;
 
     public Patient(int id, WaitingRoom waitingRoom) {
         this.id = id;
