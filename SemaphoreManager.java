@@ -39,15 +39,15 @@ public class SemaphoreManager {
             throw new IllegalArgumentException("Time cannot be negative");
         }
 
-        long var2 = System.currentTimeMillis() + (long)time; // var2 stores the deadline till the dr. would wait 10:00:00 -> 10:00:03
+        long deadline = System.currentTimeMillis() + (long)time; // it stores the deadline till the dr. would wait 10:00:00 -> 10:00:03
 
         while(permits == 0) {
-            long var4 = var2 - System.currentTimeMillis(); // calculate the remaining time
-            if (var4 <= 0L) {  // if 3 seconds has expired, returns false bec. the doctor couldn't acquire a room 
+            long remaining = deadline - System.currentTimeMillis(); // calculate the remaining time from the 3 secs
+            if (remaining <= 0L) {  // if 3 seconds has expired, returns false bec. the doctor couldn't acquire a room 
                 return false;
             }
 
-            wait(var4); // dr. wait would wait for the remaining time if 3 secs didn't expire. Exits the loop / Wait ends when there're permits available "notifyAll called" or time ends
+            wait(remaining); // dr. wait would wait for the remaining time if 3 secs didn't expire. Exits the loop / Wait ends when there're permits available "notifyAll called" or time ends
         }
 
         permits--;
